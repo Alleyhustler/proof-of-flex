@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proof of Flex</title>
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --secondary-color: #2d2d2d;
+            --accent-color: #00ffbd; /* Solana green */
+            --text-color: #e0e0e0;
+            --border-color: #444;
+            --success-color: #00ffbd;
+            --pending-color: #d4a017;
+            --rejected-color: #ff4d4d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', serif;
+        }
+        
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            background-image: url('a.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        
+        header {
+            text-align: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: normal;
+        }
+        
+        .tagline {
+            font-style: italic;
+            margin-bottom: 0.75rem;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-section {
+            background-color: rgba(45, 45, 45, 0.8);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 4px;
+            height: fit-content;
+        }
+        
+        .upload-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: normal;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 4px;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--accent-color);
+        }
+        
+        .upload-area.active {
+            border-color: var(--accent-color);
+            background-color: rgba(0, 255, 189, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--accent-color);
+        }
+        
+        .form-fields {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 0.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 0.75rem;
+            width: 100%;
+            font-weight: bold;
+        }
+        
+        .submit-btn:hover {
+            background-color: #33ffcc;
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .archive-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: normal;
+        }
+        
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .flex-item {
+            background-color: rgba(45, 45, 45, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .flex-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .flex-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .flex-details {
+            padding: 0.75rem;
+        }
+        
+        .flex-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+        }
+        
+        .flex-caption {
+            margin-bottom: 0.75rem;
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+        
+        .flex-status {
+            display: inline-block;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .status-pending {
+            background-color: var(--pending-color);
+            color: var(--primary-color);
+        }
+        
+        .status-approved {
+            background-color: var(--success-color);
+            color: var(--primary-color);
+        }
+        
+        .status-rejected {
+            background-color: var(--rejected-color);
+            color: var(--text-color);
+        }
+        
+        .flex-metadata {
+            background-color: var(--primary-color);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .flex-item.expanded .flex-metadata {
+            display: block;
+        }
+        
+        .verification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .verification-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .verification-container {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 4px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .verification-status {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        
+        .verification-progress {
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .verification-progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .modal-image {
+            width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-details {
+            padding: 0.75rem;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            opacity: 0;
+            z-index: 1001;
+        }
+        
+        .demo-toggle {
+            position: fixed;
+            bottom: 0.75rem;
+            right: 0.75rem;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .how-it-works {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .how-it-works-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.3s;
+        }
+        
+        .how-it-works-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .how-it-works-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .how-it-works-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .how-it-works-content {
+            max-width: 500px;
+            width: 90%;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .how-it-works-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+        
+        .how-it-works-content h3 {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: normal;
+            font-size: 1.3rem;
+        }
+        
+        .how-it-works-content ol {
+            padding-left: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .how-it-works-content li {
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .archive-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+
+            </div>
+            <h1>Proof of Flex</h1>
+            <p class="tagline">If not archived, it did not happen.</p>
+            <a href="https://x.com/ProofOfFlex" class="social-link" target="_blank">
+                <span>Follow on X</span>
+            </a>
+        </header>
+        
+        <div class="main-content">
+            <section class="upload-section">
+                <h2>Submit Your Proof</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">⬆️</div>
+                    <p>Drop screenshot or click to select</p>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                
+                <div class="form-fields">
+                    <div class="form-group">
+                        <label for="alias">Alias (Optional)</label>
+                        <input type="text" id="alias" placeholder="Anonymous Flexer">
+                    </div>
+                    <div class="form-group">
+                        <label for="twitter">Twitter Handle (Optional)</label>
+                        <input type="text" id="twitter" placeholder="@username">
+                    </div>
+                    <div class="form-group">
+                        <label for="wallet">Solana Wallet (Optional)</label>
+                        <input type="text" id="wallet" placeholder="So1...">
+                    </div>
+                    <div class="form-group">
+                        <label for="ticker">Token Ticker (Optional)</label>
+                        <input type="text" id="ticker" placeholder="SOL, BONK, JTO, etc.">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="caption">Caption</label>
+                    <textarea id="caption" placeholder="Describe your achievement..."></textarea>
+                </div>
+                
+                <button class="submit-btn" id="submitBtn" disabled>Submit for Verification</button>
+            </section>
+            
+            <section class="archive-section">
+                <h2>Archive of Verified Proofs</h2>
+                <div class="archive-grid" id="archiveGrid">
+                    <!-- Archive items will be dynamically added here -->
+                </div>
+            </section>
+        </div>
+        
+        <div class="how-it-works">
+            <button class="how-it-works-btn" id="howItWorksBtn">How It Works</button>
+        </div>
+    </div>
+    
+    <!-- Verification Overlay -->
+    <div class="verification-overlay" id="verificationOverlay">
+        <div class="verification-container">
+            <div class="verification-status" id="verificationStatus">Image received — initiating verification</div>
+            <div class="verification-progress">
+                <div class="verification-progress-bar" id="verificationProgress"></div>
+            </div>
+            <div id="verificationDetails"></div>
+        </div>
+    </div>
+    
+    <!-- Image Modal -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">×</button>
+            <img class="modal-image" id="modalImage" src="" alt="Flex image">
+            <div class="modal-details">
+                <div class="flex-meta">
+                    <span id="modalAlias"></span>
+                    <span id="modalDate"></span>
+                </div>
+                <div class="flex-caption" id="modalCaption"></div>
+                <div class="flex-metadata" id="modalMetadata"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- How It Works Modal -->
+    <div class="how-it-works-modal" id="howItWorksModal">
+        <div class="how-it-works-content">
+            <button class="how-it-works-close" id="howItWorksClose">×</button>
+            <h3>The Verification Ritual</h3>
+            <ol>
+                <li><strong>Submission:</strong> Upload your social media screenshot as proof of your achievement.</li>
+                <li><strong>Verification:</strong> Our system checks the image metadata and cross-references with Solana on-chain data.</li>
+                <li><strong>Approval:</strong> The Proof of Flex council reviews each submission for authenticity.</li>
+                <li><strong>Archiving:</strong> Approved proofs are permanently added to the ceremonial ledger.</li>
+            </ol>
+            <p style="font-size: 0.8rem; opacity: 0.7;"><em>Note: This is currently a demonstration. In production, verification would connect to actual Solana blockchain data.</em></p>
+        </div>
+    </div>
+    
+    <!-- Demo Toggle -->
+    <div class="demo-toggle" id="demoToggle">Demo Mode: ON</div>
+    
+    <script>
+        // Preloaded archive images with Solana focus
+        const preloadedImages = [
+            { id: 1, src: '1.png', alias: 'SolanaWhale', date: '2023-11-15', ticker: 'SOL', caption: 'Early SOL accumulation', status: 'approved' },
+            { id: 2, src: '2.png', alias: 'DeGodHolder', date: '2023-11-10', ticker: 'DUST', caption: 'Rare NFT acquisition', status: 'approved' },
+            { id: 3, src: '3.png', alias: 'JitoMaxi', date: '2023-11-05', ticker: 'JTO', caption: 'Perfect airdrop timing', status: 'approved' },
+            { id: 4, src: '4.png', alias: 'BonkEarly', date: '2023-10-28', ticker: 'BONK', caption: 'Meme coin presale', status: 'approved' }
+        ];
+        
+        // State management
+        let archiveItems = [...preloadedImages];
+        let demoMode = true;
+        let currentFile = null;
+        
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const archiveGrid = document.getElementById('archiveGrid');
+        const verificationOverlay = document.getElementById('verificationOverlay');
+        const verificationStatus = document.getElementById('verificationStatus');
+        const verificationProgress = document.getElementById('verificationProgress');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalAlias = document.getElementById('modalAlias');
+        const modalDate = document.getElementById('modalDate');
+        const modalCaption = document.getElementById('modalCaption');
+        const modalMetadata = document.getElementById('modalMetadata');
+        const modalClose = document.getElementById('modalClose');
+        const howItWorksBtn = document.getElementById('howItWorksBtn');
+        const howItWorksModal = document.getElementById('howItWorksModal');
+        const howItWorksClose = document.getElementById('howItWorksClose');
+        const demoToggle = document.getElementById('demoToggle');
+        
+        // Initialize the archive
+        function initializeArchive() {
+            archiveGrid.innerHTML = '';
+            archiveItems.forEach(item => {
+                addArchiveItem(item);
+            });
+        }
+        
+        // Add an item to the archive
+        function addArchiveItem(item) {
+            const flexItem = document.createElement('div');
+            flexItem.className = 'flex-item';
+            flexItem.dataset.id = item.id;
+            
+            const statusClass = `status-${item.status}`;
+            
+            // Generate mock Solana metadata
+            const txHash = generateSolanaTxHash();
+            const wallet = item.wallet ? maskSolanaWallet(item.wallet) : 'Anonymous';
+            
+            flexItem.innerHTML = `
+                <img class="flex-image" src="${item.src}" alt="Flex image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlByb29mIG9mIEZsZXggSW1hZ2U8L3RleHQ+PC9zdmc+'">
+                <div class="flex-details">
+                    <div class="flex-meta">
+                        <span>${item.alias}</span>
+                        <span>${item.date}</span>
+                    </div>
+                    <div class="flex-caption">${item.caption}</div>
+                    <div class="flex-status ${statusClass}">${item.status.toUpperCase()}</div>
+                    <div class="flex-metadata">
+                        TX: ${txHash}<br>
+                        Wallet: ${wallet}<br>
+                        Ticker: ${item.ticker || 'N/A'}
+                    </div>
+                </div>
+            `;
+            
+            // Add click event to expand metadata
+            const flexImage = flexItem.querySelector('.flex-image');
+            flexImage.addEventListener('click', () => {
+                openImageModal(item);
+            });
+            
+            // Add hover event to show metadata
+            flexItem.addEventListener('mouseenter', () => {
+                flexItem.classList.add('expanded');
+            });
+            
+            flexItem.addEventListener('mouseleave', () => {
+                flexItem.classList.remove('expanded');
+            });
+            
+            archiveGrid.prepend(flexItem);
+        }
+        
+        // Open image modal
+        function openImageModal(item) {
+            modalImage.src = item.src;
+            modalAlias.textContent = item.alias;
+            modalDate.textContent = item.date;
+            modalCaption.textContent = item.caption;
+            
+            // Generate mock Solana metadata
+            const txHash = generateSolanaTxHash();
+            const wallet = item.wallet ? maskSolanaWallet(item.wallet) : 'Anonymous';
+            
+            modalMetadata.innerHTML = `
+                TX: ${txHash}<br>
+                Wallet: ${wallet}<br>
+                Ticker: ${item.ticker || 'N/A'}<br>
+                Status: ${item.status.toUpperCase()}
+            `;
+            
+            imageModal.classList.add('active');
+        }
+        
+        // Generate a mock Solana transaction hash
+        function generateSolanaTxHash() {
+            const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+            let result = '';
+            for (let i = 0; i < 44; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        // Mask Solana wallet address for privacy
+        function maskSolanaWallet(wallet) {
+            if (wallet.length < 10) return wallet;
+            return wallet.substring(0, 4) + '...' + wallet.substring(wallet.length - 4);
+        }
+        
+        // Upload area event handlers
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('active');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('active');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('active');
+            
+            if (e.dataTransfer.files.length) {
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+        
+        // Handle file selection
+        function handleFileSelect(file) {
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file.');
+                return;
+            }
+            
+            currentFile = file;
+            submitBtn.disabled = false;
+            
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadArea.innerHTML = `
+                    <img src="${e.target.result}" style="max-width: 100%; max-height: 120px; object-fit: contain;" alt="Preview">
+                    <p style="margin-top: 0.5rem;">Image ready for verification</p>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Submit button handler
+        submitBtn.addEventListener('click', () => {
+            if (!currentFile) return;
+            
+            const alias = document.getElementById('alias').value || 'Anonymous';
+            const twitter = document.getElementById('twitter').value;
+            const wallet = document.getElementById('wallet').value;
+            const ticker = document.getElementById('ticker').value;
+            const caption = document.getElementById('caption').value || 'No caption provided';
+            
+            // Show verification overlay
+            verificationOverlay.classList.add('active');
+            
+            // Start verification process
+            simulateVerification(alias, twitter, wallet, ticker, caption);
+        });
+        
+        // Simulate the verification process
+        function simulateVerification(alias, twitter, wallet, ticker, caption) {
+            const steps = [
+                { text: "Image received — initiating verification", duration: 800 },
+                { text: "Scanning image metadata", duration: 1200 },
+                { text: "Checking Solana chain proof", duration: 1500 },
+                { text: "Matching screenshot metadata", duration: 1200 },
+                { text: "Queued for approval", duration: 800 }
+            ];
+            
+            let currentStep = 0;
+            let progress = 0;
+            const totalDuration = steps.reduce((sum, step) => sum + step.duration, 0);
+            
+            function updateProgress() {
+                if (currentStep < steps.length) {
+                    verificationStatus.textContent = steps[currentStep].text;
+                    
+                    // Calculate progress percentage
+                    const stepProgress = (steps[currentStep].duration / totalDuration) * 100;
+                    const incrementalProgress = (100 / steps.length) * currentStep;
+                    
+                    progress = incrementalProgress;
+                    verificationProgress.style.width = `${progress}%`;
+                    
+                    setTimeout(() => {
+                        currentStep++;
+                        updateProgress();
+                    }, steps[currentStep].duration);
+                } else {
+                    // Verification complete
+                    verificationProgress.style.width = '100%';
+                    
+                    setTimeout(() => {
+                        completeVerification(alias, twitter, wallet, ticker, caption);
+                    }, 800);
+                }
+            }
+            
+            updateProgress();
+        }
+        
+        // Complete verification and add to archive
+        function completeVerification(alias, twitter, wallet, ticker, caption) {
+            verificationOverlay.classList.remove('active');
+            
+            // Create new archive item
+            const newItem = {
+                id: Date.now(),
+                src: URL.createObjectURL(currentFile),
+                alias: alias,
+                date: new Date().toISOString().split('T')[0],
+                ticker: ticker,
+                caption: caption,
+                wallet: wallet,
+                status: 'pending'
+            };
+            
+            // Add to archive
+            archiveItems.unshift(newItem);
+            addArchiveItem(newItem);
+            
+            // Reset form
+            resetForm();
+            
+            // Simulate approval process
+            if (demoMode) {
+                // In demo mode, randomly approve or reject after a delay
+                const delay = Math.random() * 4000 + 2000; // 2-6 seconds
+                const willApprove = Math.random() > 0.2; // 80% approval rate
+                
+                setTimeout(() => {
+                    updateItemStatus(newItem.id, willApprove ? 'approved' : 'rejected');
+                    
+                    if (willApprove) {
+                        // Show celebration for approved items
+                        celebrateApproval(newItem.id);
+                    }
+                }, delay);
+            }
+        }
+        
+        // Update item status in the archive
+        function updateItemStatus(itemId, status) {
+            const itemIndex = archiveItems.findIndex(item => item.id === itemId);
+            if (itemIndex !== -1) {
+                archiveItems[itemIndex].status = status;
+                
+                // Update DOM
+                const flexItem = document.querySelector(`.flex-item[data-id="${itemId}"]`);
+                if (flexItem) {
+                    const statusElement = flexItem.querySelector('.flex-status');
+                    statusElement.textContent = status.toUpperCase();
+                    statusElement.className = `flex-status status-${status}`;
+                    
+                    // Update metadata if expanded
+                    const metadataElement = flexItem.querySelector('.flex-metadata');
+                    if (metadataElement) {
+                        const lines = metadataElement.innerHTML.split('<br>');
+                        lines[lines.length - 1] = `Status: ${status.toUpperCase()}`;
+                        metadataElement.innerHTML = lines.join('<br>');
+                    }
+                }
+            }
+        }
+        
+        // Celebrate approval with confetti
+        function celebrateApproval(itemId) {
+            // Create confetti elements
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(confetti);
+                
+                // Animate confetti
+                const animation = confetti.animate([
+                    { top: '-10px', opacity: 1, transform: `rotate(0deg) scale(1)` },
+                    { top: '100vh', opacity: 0, transform: `rotate(${Math.random() * 360}deg) scale(0)` }
+                ], {
+                    duration: Math.random() * 2000 + 1500,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                });
+                
+                // Remove confetti after animation
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+            
+            // Add a subtle glow to the approved item
+            const flexItem = document.querySelector(`.flex-item[data-id="${itemId}"]`);
+            if (flexItem) {
+                flexItem.style.boxShadow = '0 0 15px rgba(0, 255, 189, 0.5)';
+                setTimeout(() => {
+                    flexItem.style.boxShadow = '';
+                }, 2000);
+            }
+        }
+        
+        // Reset form after submission
+        function resetForm() {
+            document.getElementById('alias').value = '';
+            document.getElementById('twitter').value = '';
+            document.getElementById('wallet').value = '';
+            document.getElementById('ticker').value = '';
+            document.getElementById('caption').value = '';
+            fileInput.value = '';
+            submitBtn.disabled = true;
+            currentFile = null;
+            
+            uploadArea.innerHTML = `
+                <div class="upload-icon">⬆️</div>
+                <p>Drop screenshot or click to select</p>
+            `;
+        }
+        
+        // Modal close handlers
+        modalClose.addEventListener('click', () => {
+            imageModal.classList.remove('active');
+        });
+        
+        howItWorksClose.addEventListener('click', () => {
+            howItWorksModal.classList.remove('active');
+        });
+        
+        // How it works button handler
+        howItWorksBtn.addEventListener('click', () => {
+            howItWorksModal.classList.add('active');
+        });
+        
+        // Demo toggle handler
+        demoToggle.addEventListener('click', () => {
+            demoMode = !demoMode;
+            demoToggle.textContent = `Demo Mode: ${demoMode ? 'ON' : 'OFF'}`;
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                imageModal.classList.remove('active');
+            }
+            if (e.target === howItWorksModal) {
+                howItWorksModal.classList.remove('active');
+            }
+        });
+        
+        // Initialize the archive on load
+        document.addEventListener('DOMContentLoaded', initializeArchive);
+    </script>
+</body>
+</html>
